@@ -43,11 +43,17 @@ public class BuildIndexInputFormat extends FileInputFormat<Text,Text>{
 		private Text key = null;
 		private Text value = null;
 		private FileSplit split;
+
+		private int attributeNo = 0;
 		
 		public void initialize(InputSplit genericSplit,
                 TaskAttemptContext context) throws IOException {
 			split = (FileSplit) genericSplit;
 			Configuration job = context.getConfiguration();
+
+			attributeNo = job.getInt("attributeNo", 0);    //获取attributeNo
+			LOG.info("____attributeNo is " + attributeNo);
+
 			this.maxLineLength = job.getInt("mapred.linerecordreader.maxlength",
                           Integer.MAX_VALUE);
 			start = split.getStart();
@@ -108,12 +114,13 @@ public class BuildIndexInputFormat extends FileInputFormat<Text,Text>{
 		               (pos - newSize));
 		     }
 		      String str[] = value.toString().split("\\|");
-		      key.set(Long.toString(split.getStart())+'|'+str[0]);
-		      if (newSize == 0) {
-		       key = null;
-		       value = null;
-		        return false;
-		      } else {
+			key.set(Long.toString(split.getStart()) + '|' + str[attributeNo]);
+			if (newSize == 0)
+			{
+				key = null;
+				value = null;
+				return false;
+			} else {
 		        return true;
 		      }
 		 }

@@ -3,6 +3,8 @@ package buildindex;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.WritableComparable;
+
 /*
  *Index包含Header,footer,indexcontainer 
  * 
@@ -17,28 +19,35 @@ public class Index{
 		indexcontainer = new IndexContainerImpl();
 	}
 	public void put(Text key,LongWritable value){
-		long ikey = Long.parseLong(key.toString());
-		LongWritable iwkey = new LongWritable(ikey);
+//		long ikey = Long.parseLong(key.toString());
+//		LongWritable iwkey = new LongWritable(ikey);
 	//	long lvalue = Long.parseLong(value);
-		indexcontainer.put(iwkey, value);
+		indexcontainer.put(key, value);
 	}
-	public void remove(LongWritable key){
+
+	public void remove(WritableComparable key)
+	{
 		indexcontainer.remove(key);
 	}
-	public boolean containkey(LongWritable key){
+
+	public boolean containkey(WritableComparable key)
+	{
 		return indexcontainer.containsKey(key);
 	}
 	public boolean containvalue(LongWritable value){
 		return indexcontainer.containsValue(value);
 	}
 	//查询key所对应的value值，即pos值。
-	public LongWritable lookup(LongWritable key){
+	public LongWritable lookup(WritableComparable key)
+	{
 		if(containkey(key) == true)
 			return (LongWritable)indexcontainer.get(key);
 		else
 			return new LongWritable(0);
 	}
-	public int setheader(LongWritable dsize,LongWritable fkey,LongWritable lkey,LongWritable num){
+
+	public int setheader(LongWritable dsize, WritableComparable fkey, WritableComparable lkey, LongWritable num)
+	{
 		if(header == null)
 			return 0;
 		else

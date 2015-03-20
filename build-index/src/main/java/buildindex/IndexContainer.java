@@ -7,14 +7,19 @@ import java.util.Map;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 
 public interface IndexContainer extends Writable {
 	public void readFields(DataInput in) throws IOException;
 	public void write(DataOutput out) throws IOException;
-	public void put(LongWritable key,LongWritable value);
-	public void remove(LongWritable key);
-	public boolean containsKey(LongWritable key);
+
+	public void put(WritableComparable key, LongWritable value);
+
+	public void remove(WritableComparable key);
+
+	public boolean containsKey(WritableComparable key);
 	public boolean containsValue(LongWritable value);
-	public LongWritable get(LongWritable key);
+
+	public WritableComparable get(WritableComparable key);
 	public long size();
 }

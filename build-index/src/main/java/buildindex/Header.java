@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 
 /*
  * Header包含datasize,indexsize,firstkey,lastkey,Recordnum
@@ -16,11 +17,13 @@ import org.apache.hadoop.io.Writable;
 */
 public class Header implements Writable{
 	LongWritable datasize = new LongWritable(0);
-	LongWritable indexsize = new LongWritable(0);   
-	LongWritable firstkey = new LongWritable(0);
-	LongWritable lastkey = new LongWritable(0);
+	LongWritable indexsize = new LongWritable(0);
+	WritableComparable firstkey = null;
+	WritableComparable lastkey = null;
 	LongWritable Recordnum = new LongWritable(0);
-	public void set(LongWritable dsize,LongWritable fkey,LongWritable lkey,LongWritable num){
+
+	public void set(LongWritable dsize, WritableComparable fkey, WritableComparable lkey, LongWritable num)
+	{
 		datasize = dsize;
 		firstkey = fkey;
 		lastkey = lkey;
@@ -41,31 +44,50 @@ public class Header implements Writable{
 	public LongWritable getindexsize(){
 		return indexsize;
 	}
-	public LongWritable getfirstkey(){
+
+	public WritableComparable getfirstkey()
+	{
 		return firstkey;
 	}
-	public LongWritable getlastkey(){
+
+	public WritableComparable getlastkey()
+	{
 		return lastkey;
 	}
 	public LongWritable getrecordnum(){
 		return Recordnum;
 	}
 	//计算lowkey和highkey区间和split的区间的重叠关系，从而通过此决定偏移量移动到哪里
-	public Overlap getOverlapType(LongWritable lowkey,LongWritable highkey){
-		if(highkey.get()<firstkey.get() || lowkey.get()>lastkey.get())
+	public Overlap getOverlapType(WritableComparable lowkey, WritableComparable highkey)
+	{
+		if (highkey.compareTo(firstkey) < 0 || lowkey.compareTo(lastkey) > 0)
 			return Overlap.NOT_CONTAINED;
-		else if(lowkey.get()<firstkey.get() && highkey.get()<lastkey.get())
+		else if (lowkey.compareTo(firstkey) < 0 && highkey.compareTo(lastkey) < 0)
 			return Overlap.RIGHT_CONTAINED;
-		else if(lowkey.get()<firstkey.get() && highkey.get()>=lastkey.get())
+		else if (lowkey.compareTo(firstkey) < 0 && highkey.compareTo(lastkey) >= 0)
 			return Overlap.SPAN;
-		else if(highkey.get()>lastkey.get() && lowkey.get()>=firstkey.get())
+		else if (highkey.compareTo(lastkey) > 0 && lowkey.compareTo(firstkey) >= 0)
 			return Overlap.LEFT_CONTAINED;
-		else if(highkey.get()<=lastkey.get() && lowkey.get()>=firstkey.get())
+		else if (highkey.compareTo(lastkey) <= 0 && lowkey.compareTo(firstkey) >= 0)
 			return Overlap.FULL_CONTAINED;
-		else if(lowkey == lastkey)
+		else if (lowkey.compareTo(lastkey) == 0)
 			return Overlap.POINT_CONTAINED;
 		else
 			return null;
+//		if(highkey.get()<firstkey.get() || lowkey.get()>lastkey.get())
+//			return Overlap.NOT_CONTAINED;
+//		else if(lowkey.get()<firstkey.get() && highkey.get()<lastkey.get())
+//			return Overlap.RIGHT_CONTAINED;
+//		else if(lowkey.get()<firstkey.get() && highkey.get()>=lastkey.get())
+//			return Overlap.SPAN;
+//		else if(highkey.get()>lastkey.get() && lowkey.get()>=firstkey.get())
+//			return Overlap.LEFT_CONTAINED;
+//		else if(highkey.get()<=lastkey.get() && lowkey.get()>=firstkey.get())
+//			return Overlap.FULL_CONTAINED;
+//		else if(lowkey == lastkey)
+//			return Overlap.POINT_CONTAINED;
+//		else
+//			return null;
 	}
 	//计算Header的大小
 	public long size(){

@@ -15,9 +15,10 @@ public class BuildIndexComparator extends WritableComparator{
 		String t2 = b.toString();
 		String str1[] = t1.split("\\|");
 		String str2[] = t2.split("\\|");
-		long l1 = Long.parseLong(str1[1]);
-		long l2 = Long.parseLong(str2[1]);
-		return Long.compare(l1, l2);
+		return str1[1].compareTo(str2[1]);
+//		long l1 = Long.parseLong(str1[1]);
+//		long l2 = Long.parseLong(str2[1]);
+//		return Long.compare(l1, l2);
 	}
 
 }

@@ -25,7 +25,8 @@ public class BuildIndexReduce extends Reducer<Text,Text,NullWritable,Writable>{
 			long recordnum = 0;
 			//获取firstkey，此处默认数据是有序的，所以直接取第一个key值的属性值作为最小值，
 			//假如数据此属性不有序不适用。
-			LongWritable firstkey = new LongWritable(Long.parseLong(str[1]));
+//			LongWritable firstkey = new LongWritable(Long.parseLong(str[1]));
+			Text firstkey = new Text(str[1]);
 			
 			for(Text value:values){
 				context.write(NullWritable.get(),value);//将原数据写到文件中
@@ -37,7 +38,8 @@ public class BuildIndexReduce extends Reducer<Text,Text,NullWritable,Writable>{
 			}
 			//获取lastkey，此处默认数据是有序的，所以直接取最后一个key值的属性值作为最大值，
 			//假如数据此属性不有序不适用。
-			LongWritable lastkey = new LongWritable(Long.parseLong(str[1]));
+//			LongWritable lastkey = new LongWritable(Long.parseLong(str[1]));
+			Text lastkey = new Text(str[1]);
 			//依次将indexcontainer,header,footer写入文件中
 			index.setheader(new LongWritable(pos),firstkey,lastkey,new LongWritable(recordnum));
 			context.write(NullWritable.get(),index.indexcontainer);
